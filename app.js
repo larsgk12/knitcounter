@@ -114,7 +114,7 @@ function renderList() {
 
     const meta = document.createElement('span');
     meta.className = 'pi-meta';
-    meta.textContent = `Rad ${p.rows} · ${p.stitches}${p.stitchesPerRow ? '/' + p.stitchesPerRow : ''} m`;
+    meta.textContent = `Øk/fell ${p.rows} · Omg ${p.stitches}${p.stitchesPerRow ? '/' + p.stitchesPerRow : ''}`;
 
     btn.append(name, meta);
     btn.addEventListener('click', () => openProject(p.id));
@@ -176,11 +176,11 @@ function renderCounter() {
 
   const prog = $('stitch-progress');
   if (p.stitchesPerRow) {
-    $('stitches-extra').textContent = `av ${p.stitchesPerRow} per rad`;
+    $('stitches-extra').textContent = `av ${p.stitchesPerRow} før økning/felling`;
     prog.hidden = false;
     $('stitch-progress-bar').style.width = Math.min(100, (p.stitches / p.stitchesPerRow) * 100) + '%';
   } else {
-    $('stitches-extra').textContent = 'manuell rad';
+    $('stitches-extra').textContent = 'manuell';
     prog.hidden = true;
   }
 }
@@ -203,7 +203,7 @@ function addStitch(delta) {
     p.stitches = 0;
     p.rows += 1;
     vibrate([60, 60, 60]);
-    toast(`Ny rad! Du er på rad ${p.rows}`);
+    toast(`Tid for økning/felling! (nr. ${p.rows})`);
     bump($('rows-value'));
   }
   touch(p);
@@ -245,7 +245,7 @@ confirmTap($('btn-row-reset'), () => {
   p.rows = 0;
   touch(p);
   renderCounter();
-  toast('Radtelleren er nullstilt');
+  toast('Økning/felling er nullstilt');
 });
 
 confirmTap($('btn-stitch-reset'), () => {
@@ -254,7 +254,7 @@ confirmTap($('btn-stitch-reset'), () => {
   p.stitches = 0;
   touch(p);
   renderCounter();
-  toast('Masketelleren er nullstilt');
+  toast('Omgangstelleren er nullstilt');
 });
 
 $('btn-back').addEventListener('click', () => {
@@ -296,7 +296,7 @@ confirmTap($('btn-delete'), () => {
 // ---------- Skjermen alltid på (Screen Wake Lock API) ----------
 let wakeLock = null;
 
-async function updateWakeLock() {
+async function updateWakeLock(fromUser = false) {
   const want = state.keepAwake && !viewCounter.hidden && document.visibilityState === 'visible';
   renderWakeButton();
 
@@ -310,7 +310,7 @@ async function updateWakeLock() {
     wakeLock.addEventListener('release', () => { wakeLock = null; });
   } catch (e) {
     wakeLock = null;
-    toast('Fikk ikke holdt skjermen på (f.eks. pga. strømsparing)');
+    if (fromUser) toast('Fikk ikke holdt skjermen på (f.eks. pga. strømsparing)');
   }
 }
 
@@ -328,11 +328,11 @@ $('btn-wake').addEventListener('click', () => {
   state.keepAwake = !state.keepAwake;
   save();
   toast(state.keepAwake ? 'Skjermen holdes på' : 'Skjermen kan slukke igjen');
-  updateWakeLock();
+  updateWakeLock(true);
 });
 
 // Nettleseren slipper låsen når appen skjules; hent den tilbake når du kommer tilbake.
-document.addEventListener('visibilitychange', updateWakeLock);
+document.addEventListener('visibilitychange', () => updateWakeLock());
 
 // ---------- Installer som app ----------
 const isStandalone = () =>

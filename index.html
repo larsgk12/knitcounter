@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Strikketeller</title>
-  <meta name="description" content="Enkel teller for masker og rader i strikkeprosjekter.">
+  <meta name="description" content="Enkel teller for omganger og økninger/fellinger i strikkeprosjekter.">
   <meta name="theme-color" content="#faf6f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1b1619" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="manifest.webmanifest">
@@ -53,31 +53,31 @@
     <main class="counters">
       <div class="counter" id="counter-rows">
         <div class="counter-head">
-          <span class="counter-name">Rader</span>
+          <span class="counter-name">Økning/felling</span>
           <span class="counter-extra" id="rows-extra"></span>
         </div>
-        <button class="big-btn big-rows" id="btn-row-plus" aria-label="Legg til én rad">
+        <button class="big-btn big-rows" id="btn-row-plus" aria-label="Legg til én økning eller felling">
           <span class="big-value" id="rows-value">0</span>
-          <span class="big-hint">trykk for +1 rad</span>
+          <span class="big-hint">trykk for +1 økning/felling</span>
         </button>
         <div class="counter-actions">
-          <button class="small-btn" id="btn-row-minus" aria-label="Trekk fra én rad">−1</button>
+          <button class="small-btn" id="btn-row-minus" aria-label="Trekk fra én økning eller felling">−1</button>
           <button class="small-btn danger" id="btn-row-reset">Nullstill</button>
         </div>
       </div>
 
       <div class="counter" id="counter-stitches">
         <div class="counter-head">
-          <span class="counter-name">Masker</span>
+          <span class="counter-name">Omganger</span>
           <span class="counter-extra" id="stitches-extra"></span>
         </div>
-        <button class="big-btn big-stitches" id="btn-stitch-plus" aria-label="Legg til én maske">
+        <button class="big-btn big-stitches" id="btn-stitch-plus" aria-label="Legg til én omgang">
           <span class="big-value" id="stitches-value">0</span>
-          <span class="big-hint">trykk for +1 maske</span>
+          <span class="big-hint">trykk for +1 omgang</span>
           <span class="progress" id="stitch-progress" hidden><span id="stitch-progress-bar"></span></span>
         </button>
         <div class="counter-actions">
-          <button class="small-btn" id="btn-stitch-minus" aria-label="Trekk fra én maske">−1</button>
+          <button class="small-btn" id="btn-stitch-minus" aria-label="Trekk fra én omgang">−1</button>
           <button class="small-btn danger" id="btn-stitch-reset">Nullstill</button>
         </div>
       </div>
@@ -93,9 +93,9 @@
         <input id="in-name" type="text" maxlength="60" autocomplete="off">
       </label>
       <label class="field">
-        <span>Masker per rad</span>
+        <span>Omganger per økning/felling</span>
         <input id="in-per-row" type="number" inputmode="numeric" min="0" step="1" placeholder="Manuelt">
-        <small>Når maskene når dette tallet, går telleren automatisk til ny rad. La stå tomt (eller 0) for å styre radene manuelt.</small>
+        <small>Når omgangene når dette tallet, telles det automatisk én økning/felling og omgangene starter på 0 igjen. La stå tomt (eller 0) for å styre det manuelt.</small>
       </label>
       <label class="field">
         <span>Notater</span>
@@ -119,7 +119,7 @@
         <input id="in-new-name" type="text" maxlength="60" autocomplete="off">
       </label>
       <label class="field">
-        <span>Masker per rad <em>(valgfritt)</em></span>
+        <span>Omganger per økning/felling <em>(valgfritt)</em></span>
         <input id="in-new-per-row" type="number" inputmode="numeric" min="0" step="1" placeholder="Manuelt">
       </label>
       <div class="sheet-actions">

@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Strikketeller",
   "short_name": "Strikketeller",
-  "description": "Enkel teller for masker og rader i strikkeprosjekter.",
+  "description": "Enkel teller for omganger og økninger/fellinger i strikkeprosjekter.",
   "lang": "no",
   "start_url": "./",
   "scope": "./",
