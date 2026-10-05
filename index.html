@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Strikketeller</title>
+  <meta name="description" content="Enkel teller for masker og rader i strikkeprosjekter.">
+  <meta name="theme-color" content="#7a3e5c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Strikketeller">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Prosjektliste -->
+  <section id="view-list" class="view">
+    <header class="topbar">
+      <h1>Strikketeller</h1>
+    </header>
+    <main class="list-main">
+      <ul id="project-list" class="project-list"></ul>
+      <p id="empty-hint" class="empty-hint" hidden>Ingen prosjekter ennå. Lag ditt første!</p>
+    </main>
+    <div class="bottom-bar">
+      <button id="btn-new" class="btn-primary">+ Nytt prosjekt</button>
+    </div>
+  </section>
+
+  <!-- Teller -->
+  <section id="view-counter" class="view" hidden>
+    <header class="topbar">
+      <button id="btn-back" class="icon-btn" aria-label="Tilbake til prosjekter">‹</button>
+      <h1 id="project-title" class="project-title"></h1>
+      <button id="btn-settings" class="icon-btn" aria-label="Innstillinger for prosjektet">⚙</button>
+    </header>
+
+    <button id="btn-wake" class="wake-toggle" aria-pressed="false">
+      <span class="wake-dot"></span><span id="wake-label">Skjermen kan slukke</span>
+    </button>
+
+    <main class="counters">
+      <div class="counter" id="counter-rows">
+        <div class="counter-head">
+          <span class="counter-name">Rader</span>
+          <span class="counter-extra" id="rows-extra"></span>
+        </div>
+        <button class="big-btn big-rows" id="btn-row-plus" aria-label="Legg til én rad">
+          <span class="big-value" id="rows-value">0</span>
+          <span class="big-hint">trykk for +1 rad</span>
+        </button>
+        <div class="counter-actions">
+          <button class="small-btn" id="btn-row-minus" aria-label="Trekk fra én rad">−1</button>
+          <button class="small-btn danger" id="btn-row-reset">Nullstill</button>
+        </div>
+      </div>
+
+      <div class="counter" id="counter-stitches">
+        <div class="counter-head">
+          <span class="counter-name">Masker</span>
+          <span class="counter-extra" id="stitches-extra"></span>
+        </div>
+        <button class="big-btn big-stitches" id="btn-stitch-plus" aria-label="Legg til én maske">
+          <span class="big-value" id="stitches-value">0</span>
+          <span class="big-hint">trykk for +1 maske</span>
+          <span class="progress" id="stitch-progress" hidden><span id="stitch-progress-bar"></span></span>
+        </button>
+        <div class="counter-actions">
+          <button class="small-btn" id="btn-stitch-minus" aria-label="Trekk fra én maske">−1</button>
+          <button class="small-btn danger" id="btn-stitch-reset">Nullstill</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- Innstillinger for prosjekt -->
+  <dialog id="dlg-settings" class="sheet">
+    <form method="dialog" id="form-settings">
+      <h2>Prosjekt</h2>
+      <label class="field">
+        <span>Navn</span>
+        <input id="in-name" type="text" maxlength="60" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>Masker per rad</span>
+        <input id="in-per-row" type="number" inputmode="numeric" min="0" step="1" placeholder="Manuelt">
+        <small>Når maskene når dette tallet, går telleren automatisk til ny rad. La stå tomt (eller 0) for å styre radene manuelt.</small>
+      </label>
+      <label class="field">
+        <span>Notater</span>
+        <textarea id="in-notes" rows="3" placeholder="F.eks. pinne 4 mm, mønster s. 12"></textarea>
+      </label>
+      <div class="sheet-actions">
+        <button type="button" id="btn-delete" class="btn-text danger">Slett prosjekt</button>
+        <span class="spacer"></span>
+        <button value="cancel" class="btn-text">Avbryt</button>
+        <button value="save" id="btn-save" class="btn-primary">Lagre</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Nytt prosjekt -->
+  <dialog id="dlg-new" class="sheet">
+    <form method="dialog" id="form-new">
+      <h2>Nytt prosjekt</h2>
+      <label class="field">
+        <span>Navn</span>
+        <input id="in-new-name" type="text" maxlength="60" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>Masker per rad <em>(valgfritt)</em></span>
+        <input id="in-new-per-row" type="number" inputmode="numeric" min="0" step="1" placeholder="Manuelt">
+      </label>
+      <div class="sheet-actions">
+        <span class="spacer"></span>
+        <button value="cancel" class="btn-text">Avbryt</button>
+        <button value="create" class="btn-primary">Opprett</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
