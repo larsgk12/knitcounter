@@ -1,5 +1,5 @@
 // Enkel offline-støtte: legg alle filene i hurtiglageret ved installasjon.
-const CACHE = 'strikketeller-v1';
+const CACHE = 'strikketeller-v2';
 const FILES = [
   './',
   'index.html',
@@ -28,7 +28,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
     caches.open(CACHE).then(cache =>
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then(res => {
           if (res.ok && new URL(event.request.url).origin === location.origin) {
             cache.put(event.request, res.clone());

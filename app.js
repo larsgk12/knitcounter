@@ -186,22 +186,45 @@ $('btn-row-minus').addEventListener('click', () => addRow(-1));
 $('btn-stitch-plus').addEventListener('click', () => { vibrate(15); addStitch(1); });
 $('btn-stitch-minus').addEventListener('click', () => addStitch(-1));
 
-$('btn-row-reset').addEventListener('click', () => {
-  const p = current();
-  if (p && confirm('Nullstille radtelleren?')) {
-    p.rows = 0;
-    touch(p);
-    renderCounter();
+// Bekreft med to trykk i stedet for confirm(), som enkelte mobilnettlesere og
+// installerte apper blokkerer stille.
+function confirmTap(btn, action) {
+  const label = btn.textContent;
+  let timer = null;
+  btn.addEventListener('click', () => {
+    if (!btn.classList.contains('confirming')) {
+      btn.classList.add('confirming');
+      btn.textContent = 'Trykk igjen';
+      vibrate(10);
+      timer = setTimeout(reset, 3000);
+      return;
+    }
+    reset();
+    action();
+  });
+  function reset() {
+    clearTimeout(timer);
+    btn.classList.remove('confirming');
+    btn.textContent = label;
   }
+}
+
+confirmTap($('btn-row-reset'), () => {
+  const p = current();
+  if (!p) return;
+  p.rows = 0;
+  touch(p);
+  renderCounter();
+  toast('Radtelleren er nullstilt');
 });
 
-$('btn-stitch-reset').addEventListener('click', () => {
+confirmTap($('btn-stitch-reset'), () => {
   const p = current();
-  if (p && confirm('Nullstille masketelleren?')) {
-    p.stitches = 0;
-    touch(p);
-    renderCounter();
-  }
+  if (!p) return;
+  p.stitches = 0;
+  touch(p);
+  renderCounter();
+  toast('Masketelleren er nullstilt');
 });
 
 $('btn-back').addEventListener('click', () => {
@@ -232,9 +255,9 @@ $('form-settings').addEventListener('submit', e => {
   renderCounter();
 });
 
-$('btn-delete').addEventListener('click', () => {
+confirmTap($('btn-delete'), () => {
   const p = current();
-  if (!p || !confirm(`Slette «${p.name}»? Dette kan ikke angres.`)) return;
+  if (!p) return;
   state.projects = state.projects.filter(x => x.id !== p.id);
   state.currentId = null;
   save();
