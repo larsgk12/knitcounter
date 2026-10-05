@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Strikketeller</title>
   <meta name="description" content="Enkel teller for masker og rader i strikkeprosjekter.">
-  <meta name="theme-color" content="#7a3e5c">
+  <meta name="theme-color" content="#faf6f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1b1619" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Strikketeller">
   <link rel="stylesheet" href="style.css">
@@ -19,7 +22,13 @@
   <section id="view-list" class="view">
     <header class="topbar">
       <h1>Strikketeller</h1>
+      <button id="btn-install" class="pill-btn" hidden>Installer</button>
     </header>
+    <div id="install-banner" class="install-banner" hidden>
+      <img src="icons/icon-192.png" alt="" width="44" height="44">
+      <p id="install-text"></p>
+      <button id="btn-install-close" class="icon-btn" aria-label="Lukk">×</button>
+    </div>
     <main class="list-main">
       <ul id="project-list" class="project-list"></ul>
       <p id="empty-hint" class="empty-hint" hidden>Ingen prosjekter ennå. Lag ditt første!</p>

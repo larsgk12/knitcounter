@@ -63,10 +63,19 @@ const viewList = $('view-list');
 const viewCounter = $('view-counter');
 
 function showView(name) {
+  const el = name === 'list' ? viewList : viewCounter;
+  const wasHidden = el.hidden;
   viewList.hidden = name !== 'list';
   viewCounter.hidden = name !== 'counter';
+  if (wasHidden && booted) {
+    el.classList.remove('slide-forward', 'slide-back');
+    void el.offsetWidth;
+    el.classList.add(name === 'counter' ? 'slide-forward' : 'slide-back');
+  }
+  window.scrollTo(0, 0);
   updateWakeLock();
 }
+let booted = false;
 
 function vibrate(pattern) {
   if (navigator.vibrate) navigator.vibrate(pattern);
@@ -114,12 +123,33 @@ function renderList() {
   }
 }
 
+// Prosjektet legges i nettleserhistorikken, så tilbakeknappen på Android
+// (og sveip tilbake på iPhone) går til prosjektlisten i stedet for å lukke appen.
 function openProject(id) {
   state.currentId = id;
   save();
   renderCounter();
+  if (!history.state || history.state.view !== 'counter') {
+    history.pushState({ view: 'counter' }, '');
+  }
   showView('counter');
 }
+
+function closeProject() {
+  state.currentId = null;
+  save();
+  renderList();
+  showView('list');
+}
+
+window.addEventListener('popstate', e => {
+  if (e.state && e.state.view === 'counter' && current()) {
+    renderCounter();
+    showView('counter');
+  } else if (!viewCounter.hidden) {
+    closeProject();
+  }
+});
 
 $('btn-new').addEventListener('click', () => {
   $('in-new-name').value = '';
@@ -228,10 +258,8 @@ confirmTap($('btn-stitch-reset'), () => {
 });
 
 $('btn-back').addEventListener('click', () => {
-  state.currentId = null;
-  save();
-  renderList();
-  showView('list');
+  if (history.state && history.state.view === 'counter') history.back();
+  else closeProject();
 });
 
 // ---------- Innstillinger ----------
@@ -259,11 +287,10 @@ confirmTap($('btn-delete'), () => {
   const p = current();
   if (!p) return;
   state.projects = state.projects.filter(x => x.id !== p.id);
-  state.currentId = null;
-  save();
   $('dlg-settings').close('deleted');
-  renderList();
-  showView('list');
+  if (history.state && history.state.view === 'counter') history.back();
+  else closeProject();
+  toast(`«${p.name}» er slettet`);
 });
 
 // ---------- Skjermen alltid på (Screen Wake Lock API) ----------
@@ -307,14 +334,64 @@ $('btn-wake').addEventListener('click', () => {
 // Nettleseren slipper låsen når appen skjules; hent den tilbake når du kommer tilbake.
 document.addEventListener('visibilitychange', updateWakeLock);
 
+// ---------- Installer som app ----------
+const isStandalone = () =>
+  matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let installEvent = null;
+
+function showInstallBanner(text) {
+  if (isStandalone() || state.installDismissed) return;
+  $('install-text').innerHTML = text;
+  $('install-banner').hidden = false;
+}
+
+// Android/Chrome/Edge: nettleseren lar oss vise vår egen installer-knapp.
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installEvent = e;
+  $('btn-install').hidden = false;
+  showInstallBanner('Installer Strikketeller, så åpnes den som en vanlig app fra hjemskjermen.');
+});
+
+$('btn-install').addEventListener('click', async () => {
+  if (!installEvent) return;
+  installEvent.prompt();
+  await installEvent.userChoice;
+  installEvent = null;
+  $('btn-install').hidden = true;
+  $('install-banner').hidden = true;
+});
+
+window.addEventListener('appinstalled', () => {
+  $('btn-install').hidden = true;
+  $('install-banner').hidden = true;
+  toast('Strikketeller er installert');
+});
+
+$('btn-install-close').addEventListener('click', () => {
+  $('install-banner').hidden = true;
+  state.installDismissed = true;
+  save();
+});
+
+// iPhone/iPad har ingen installer-knapp, så vi forklarer hvordan.
+if (isIos && !isStandalone()) {
+  showInstallBanner('Legg appen på hjemskjermen: trykk <b>Del</b> <span aria-hidden="true">⎙</span> og velg <b>Legg til på Hjem-skjerm</b>.');
+}
+
 // ---------- Oppstart ----------
 renderList();
+history.replaceState({ view: 'list' }, '');
 if (current()) {
   renderCounter();
+  history.pushState({ view: 'counter' }, '');
   showView('counter');
 } else {
   showView('list');
 }
+booted = true;
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

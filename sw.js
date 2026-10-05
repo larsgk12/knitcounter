@@ -1,5 +1,5 @@
 // Enkel offline-støtte: legg alle filene i hurtiglageret ved installasjon.
-const CACHE = 'strikketeller-v2';
+const CACHE = 'strikketeller-v3';
 const FILES = [
   './',
   'index.html',
